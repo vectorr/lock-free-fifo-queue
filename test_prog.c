@@ -78,8 +78,9 @@ static bool check_pop_num(pop_ctx_t *ctx)
         for (int i = 0; i < N_POP_THREADS; ++i) {
             cnt += ctx[i].recv_num[n];
         }
-        if (cnt != 4) {
-            printf("recv number of %d isn't 4, but is %d\n", n, cnt);
+        if (cnt != N_PUSH_THREADS) {
+            printf("recv number of %d isn't %d, but is %d\n", n, N_PUSH_THREADS,
+                   cnt);
             ret = false;
         }
     }
