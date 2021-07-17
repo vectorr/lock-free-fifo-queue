@@ -1,4 +1,4 @@
-EXEC = fifo_queue
+EXEC = test_prog
 .PHONY: all
 all: $(EXEC)
 
@@ -6,7 +6,7 @@ CC ?= gcc
 CFLAGS = -std=c11 -Wall -g
 LDFLAGS = -lpthread -latomic
 
-OBJS := fifo_queue.o
+OBJS := hzp_rec_mgr.o fifo_queue.o test_prog.o
 
 deps := $(OBJS:%.o=.%.o.d)
 
