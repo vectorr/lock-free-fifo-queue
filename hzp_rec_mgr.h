@@ -17,11 +17,11 @@ hzp_rec_t *hzp_rec_mgr_get_myrec(hzp_rec_mgr_t *mgr);
 
 void hzp_rec_mgr_put_myrec(hzp_rec_mgr_t *mgr, hzp_rec_t *my_rec);
 
-void hzp_rec_mgr_retire_hzp(hzp_rec_mgr_t *restrict mgr,
-                            hzp_rec_t *restrict my_rec,
+void hzp_rec_mgr_retire_hzp(hzp_rec_mgr_t *mgr,
+                            hzp_rec_t *my_rec,
                             void *retired_p);
 
-void hzp_rec_mgr_scan(hzp_rec_mgr_t *restrict mgr, hzp_rec_t *my_rec);
+void hzp_rec_mgr_scan(hzp_rec_mgr_t *mgr, hzp_rec_t *my_rec);
 
 bool hzp_rec_set_pointer(hzp_rec_t *rec, int idx, void *pointer);
 

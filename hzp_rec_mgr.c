@@ -129,7 +129,7 @@ static bool _is_in_array(void *check, void *array[], int array_size)
     return false;
 }
 
-static void _collect_hzps_in_all_recs_into_plist(hzp_rec_mgr_t *restrict mgr,
+static void _collect_hzps_in_all_recs_into_plist(hzp_rec_mgr_t *mgr,
                                                  list_t *plist)
 {
     plist->num = 0;
@@ -147,7 +147,7 @@ static void _collect_hzps_in_all_recs_into_plist(hzp_rec_mgr_t *restrict mgr,
     }
 }
 
-static void _release_hzps_in_rlist_but_not_in_plist(hzp_rec_mgr_t *restrict mgr,
+static void _release_hzps_in_rlist_but_not_in_plist(hzp_rec_mgr_t *mgr,
                                                     list_t *rlist,
                                                     list_t *plist)
 {
@@ -167,15 +167,15 @@ static void _release_hzps_in_rlist_but_not_in_plist(hzp_rec_mgr_t *restrict mgr,
     }
 }
 
-void hzp_rec_mgr_scan(hzp_rec_mgr_t *restrict mgr, hzp_rec_t *my_rec)
+void hzp_rec_mgr_scan(hzp_rec_mgr_t *mgr, hzp_rec_t *my_rec)
 {
     _collect_hzps_in_all_recs_into_plist(mgr, &my_rec->plist);
     _release_hzps_in_rlist_but_not_in_plist(mgr, &my_rec->rlist,
                                             &my_rec->plist);
 }
 
-void hzp_rec_mgr_retire_hzp(hzp_rec_mgr_t *restrict mgr,
-                            hzp_rec_t *restrict my_rec,
+void hzp_rec_mgr_retire_hzp(hzp_rec_mgr_t *mgr,
+                            hzp_rec_t *my_rec,
                             void *retired_p)
 {
     // TODO: enlarge rlist if needed

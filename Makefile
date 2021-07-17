@@ -10,7 +10,7 @@ OBJS := hzp_rec_mgr.o fifo_queue.o test_prog.o
 
 deps := $(OBJS:%.o=.%.o.d)
 
-%.o: %.c
+%.o: %.c %.h
 	$(CC) $(CFLAGS) -c -MMD -MF .$@.d -o $@ $<
 
 $(EXEC): $(OBJS)

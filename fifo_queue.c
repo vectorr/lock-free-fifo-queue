@@ -8,6 +8,7 @@
 #include "hzp_rec_mgr.h"
 
 #define CAS(addr, old, new) atomic_compare_exchange_weak((addr), (old), (new))
+#define MAX_HAZARD_POINTER_NUM_PER_THRD 2
 
 typedef struct _node_t { /* Queue node */
     void *value;
@@ -38,13 +39,15 @@ inline static node_t *_con_node_init(void *value)
     return node;
 }
 
-void con_thrd_free(con_queue_t *queue, con_queue_thrd_t *restrict thrd_ctx)
+void con_thrd_free(con_queue_t *queue, con_queue_thrd_t *thrd_ctx)
 {
-    if (thrd_ctx) {
-        hzp_rec_mgr_scan(thrd_ctx->hzp_mgr, thrd_ctx->my_rec);
-        hzp_rec_mgr_put_myrec(thrd_ctx->hzp_mgr, thrd_ctx->my_rec);
-        free(thrd_ctx);
+    if (!thrd_ctx) {
+        return;
     }
+
+    hzp_rec_mgr_scan(thrd_ctx->hzp_mgr, thrd_ctx->my_rec);
+    hzp_rec_mgr_put_myrec(thrd_ctx->hzp_mgr, thrd_ctx->my_rec);
+    free(thrd_ctx);
 }
 
 con_queue_thrd_t *con_thrd_init(con_queue_t *queue)
@@ -71,7 +74,7 @@ con_queue_thrd_t *con_thrd_init(con_queue_t *queue)
  * Returns a pointer to an allocated struct for the synchronized queue or NULL
  * on failure.
  */
-con_queue_t *con_init()
+con_queue_t *con_init(int exp_thrd_num)
 {
     /* Allocate queue */
     con_queue_t *queue = malloc(sizeof(con_queue_t));
@@ -85,7 +88,8 @@ con_queue_t *con_init()
     }
     atomic_init(&queue->first, (_Atomic node_t *) dummy);
     atomic_init(&queue->last, (_Atomic node_t *) dummy);
-    queue->hzp_mgr = hzp_rec_mgr_init(9, 2, free);
+    queue->hzp_mgr =
+        hzp_rec_mgr_init(exp_thrd_num, MAX_HAZARD_POINTER_NUM_PER_THRD, free);
     // TODO: error handling
     assert(queue->hzp_mgr != NULL);
 
@@ -110,9 +114,7 @@ void con_free(con_queue_t *queue)
 /* Add element to queue. The client is responsible for freeing elementsput into
  * the queue afterwards. Returns Q_OK on success or Q_ERROR on failure.
  */
-int con_push(con_queue_t *restrict queue,
-             con_queue_thrd_t *restrict thrd_ctx,
-             void *restrict new_element)
+int con_push(con_queue_t *queue, con_queue_thrd_t *thrd_ctx, void *new_element)
 {
     /* Prepare new node */
     node_t *node = _con_node_init(new_element);
@@ -152,7 +154,7 @@ int con_push(con_queue_t *restrict queue,
  * Returns a pointer to the element previously pushed in or NULL of the queue is
  * emtpy.
  */
-void *con_pop(con_queue_t *queue, con_queue_thrd_t *restrict thrd_ctx)
+void *con_pop(con_queue_t *queue, con_queue_thrd_t *thrd_ctx)
 {
     node_t *first = NULL;
     node_t *last = NULL;

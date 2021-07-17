@@ -92,7 +92,7 @@ int main()
     thrd_t push_threads[N_PUSH_THREADS], pop_threads[N_POP_THREADS];
     pop_ctx_t pop_ctx[N_POP_THREADS];
 
-    con_queue_t *queue = con_init();
+    con_queue_t *queue = con_init(N_POP_THREADS + N_PUSH_THREADS + 1);
     con_queue_thrd_t *thrd_ctx = con_thrd_init(queue);
 
     assert(queue != NULL);
