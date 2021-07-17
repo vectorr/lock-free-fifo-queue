@@ -1,0 +1,3 @@
+*.o
+*.o.d
+fifo_queue
